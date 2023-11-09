@@ -17,6 +17,7 @@
             ]
         },
         {
+            "local_admin":  true,
             "name" : "Bob Ob",
             "password" : "Password456",
             "groups" : [

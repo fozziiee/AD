@@ -72,6 +72,11 @@ function CreateADUser(){
         }
 
     }
+
+    if ($userObject.local_admin) {
+        net localgroup administrators $Global:Domain\$username /add
+        # Add-LocalGroupMember -Group "Administrators" -Member "$Global:Domain\$username"
+    }
 }
 
 
