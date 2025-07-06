@@ -15,7 +15,7 @@ param(
 
 # # Everything after this will NOT run until after reboot unless you handle that with scheduled task or second stage script
 
-Start-Sleep -Seconds 30
+Start-Sleep -Seconds 120
 
 $logPath = "C:\cyberlab\AD\AD.log"
 Start-Transcript -Path $logPath -Append
