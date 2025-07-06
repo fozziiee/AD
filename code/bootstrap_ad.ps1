@@ -20,6 +20,8 @@ Start-Transcript -Path $logPath -Append
 
 Write-Host "Generating AD environment JSON..."
 
+Set-Location -Path "C:\cyberlab\AD\code"
+
 .\random_domain.ps1 -OutputJSONFile .\env.json -UserCount $Users -GroupCount $Groups -LocalAdminCount $Admins
 
 Write-Host "Creating AD environment from JSON schema..."
