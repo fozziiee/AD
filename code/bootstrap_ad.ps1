@@ -15,6 +15,8 @@ param(
 
 # # Everything after this will NOT run until after reboot unless you handle that with scheduled task or second stage script
 
+$logPath = "C:\cyberlab\AD"
+Start-Transcript -Path $logPath -Append
 
 Write-Host "Generating AD environment JSON..."
 
@@ -23,3 +25,5 @@ Write-Host "Generating AD environment JSON..."
 Write-Host "Creating AD environment from JSON schema..."
 
 .\gen_ad.ps1 -JSONFile .\env.json
+
+Stop-Transcript 
