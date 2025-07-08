@@ -1,24 +1,24 @@
 param(
-     [Parameter(Mandatory=$true)] $JSONFile,
-     [switch]$undo 
-     )
+    [Parameter(Mandatory = $true)] $JSONFile,
+    [switch]$undo 
+)
 
-function CreateADGroup(){
-    param( [Parameter(Mandatory=$true)] $groupObject )
+function CreateADGroup() {
+    param( [Parameter(Mandatory = $true)] $groupObject )
 
     $name = $groupObject.name
     New-ADGroup -name $name -GroupScope Global
 }
 
-function RemoveADGroup(){
-    param( [Parameter(Mandatory=$true)] $groupObject )
+function RemoveADGroup() {
+    param( [Parameter(Mandatory = $true)] $groupObject )
     
     $name = $groupObject.name
     Remove-ADGroup -Identity $name -Confirm:$False
 }
 
 function RemoveADUser() {
-    param ( [Parameter(Mandatory=$true)] $userObject )
+    param ( [Parameter(Mandatory = $true)] $userObject )
 
     $name = $userObject.name
     $firstname, $lastname = $name.Split(" ")
@@ -43,8 +43,8 @@ function StrengthenPasswordPolicy() {
     rm -force c:\Windows\Tasks\secpol.cfg -confirm:$false    
 }
 
-function CreateADUser(){
-    param( [Parameter(Mandatory=$true)] $userObject )
+function CreateADUser() {
+    param( [Parameter(Mandatory = $true)] $userObject )
 
     # Pull out the name from the JSON object
     $name = $userObject.name
@@ -60,14 +60,13 @@ function CreateADUser(){
     New-ADUser -Name "$firstname $lastname" -GivenName $firstname -Surname $lastname -SamAccountName $samAccountName -UserPrincipalName $principalname@$Global:Domain -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force ) -PassThru | Enable-ADAccount
 
     # Add the user to its appropriate group
-    foreach($group_name in $userObject.groups) {
+    foreach ($group_name in $userObject.groups) {
 
         try {
             Get-ADGroup -Identity "$group_name"
             Add-ADGroupMember -Identity $group_name -Members $username
         }
-        catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] 
-        {
+        catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
             Write-Warning "User $name NOT added to group $group_name because it does not exist."
         }
 
@@ -95,7 +94,8 @@ if (-not $undo) {
     foreach ($user in $json.users) {
         CreateADUser $user
     }
-} else {
+}
+else {
     StrengthenPasswordPolicy
     
     foreach ($user in $json.users) {

@@ -1,7 +1,8 @@
 param(
     [int]$Users = 5,
     [int]$Groups = 2,
-    [int]$Admins = 1
+    [int]$Admins = 1,
+    [string]$LabCredsUploadUrl
 )
 
 # # Install AD DS Role
@@ -30,5 +31,25 @@ Set-Location -Path "C:\cyberlab\AD\code"
 Write-Host "Creating AD environment from JSON schema..."
 
 .\gen_ad.ps1 -JSONFile .\env.json
+
+Write-Host "Uploading first AD users credentials to blob storage..."
+
+$json = Get-Content .\env.json | ConvertFrom-Json
+$firstUser = $json.users[0]
+
+$firstname, $lastname = $firstUser.Split(" ")
+$username = ($firstname[0] + $lastname).ToLower()
+
+$uploadObj = @{
+    username = $username
+    password = $firstUser.password
+} | ConvertTo-Json -Depth 2
+
+$uploadPath = "$env:TEMP\lab-creds.json"
+$uploadObj | Out-File -FilePath $uploadPath -Encoding utf8
+
+Invoke-RestMethod -Uri $LabCredsUploadUrl -Method PUT -InFile $uploadPath -ContentType "application/json"
+
+Write-Host "lab-creds.json uploaded for user $username"
 
 Stop-Transcript 
